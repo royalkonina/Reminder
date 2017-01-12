@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name">Reminder</string>
+  <string name="title">Title:</string>
+  <string name="date">Date:</string>
+  <string name="time">Time:</string>
+  <string name="description">Description:</string>
+  <string name="description_default">Description</string>
+  <string name="save">Save</string>
+</resources>

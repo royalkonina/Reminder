@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context="com.example.roman.reminder.MainActivity">
+
+  <LinearLayout
+      android:id="@+id/title_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/title"
+        android:textSize="22sp"
+        />
+
+    <EditText
+        android:id="@+id/title_edittext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:inputType="textAutoComplete"
+        android:textSize="22sp"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/date_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/title_layout"
+      android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/date"
+        android:textSize="22sp"
+        />
+
+    <EditText
+        android:id="@+id/date_edittext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:inputType="none"
+        android:textSize="22sp"/>
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/time_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/date_layout"
+      android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/time"
+        android:textSize="22sp"
+        />
+
+    <EditText
+        android:id="@+id/time_edittext"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:inputType="none"
+        android:textSize="22sp"/>
+  </LinearLayout>
+
+  <TextView
+      android:id="@+id/description_textview"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/time_layout"
+      android:text="@string/description"
+      android:textSize="22sp"/>
+
+  <EditText
+      android:id="@+id/description_edittext"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/description_textview"
+      />
+
+  <Button
+      android:id="@+id/save_button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:padding="4dp"
+      android:text="@string/save"
+      android:textSize="22sp"
+      />
+
+</RelativeLayout>
