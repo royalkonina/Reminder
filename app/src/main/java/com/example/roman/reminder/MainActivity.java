@@ -6,14 +6,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -33,9 +31,8 @@ public class MainActivity extends AppCompatActivity {
   public static final String ALARM_IS_SET = "Alarm is set";
 
 
-
-  private EditText dateEditText;
-  private EditText timeEditText;
+  private TextView dateTextView;
+  private TextView timeTextView;
   private EditText titleEditText;
   private EditText descriptionEditText;
   private Button saveButton;
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     descriptionEditText = (EditText) findViewById(R.id.description_edittext);
 
     configureDateEditText();
-    configureTimeEditText();
+    configureTimeTextView();
     configureSaveButton();
     restoreData();
 
@@ -73,8 +70,44 @@ public class MainActivity extends AppCompatActivity {
     chosenMinute = settings.getInt(MINUTE_PREFS_KEY, chosenMonth);
     titleEditText.setText(settings.getString(TITLE_PREFS_KEY, ""));
     descriptionEditText.setText(settings.getString(DESCRIPTION_PREFS_KEY, ""));
-    timeEditText.setText(chosenHour + ":" + chosenMinute);
-    dateEditText.setText(chosenYear + "/" + (chosenMonth + 1) + "/" + chosenDay);
+    if (isDataCorrect()) {
+      timeTextView.setText(timeToString(chosenHour, chosenMinute));
+      dateTextView.setText(dateToString(chosenYear, chosenMonth, chosenDay));
+    }
+  }
+
+  private String dateToString(int chosenYear, int chosenMonth, int chosenDay) {
+    String date = "";
+    date+=String.valueOf(chosenYear);
+    date+="/";
+    if(chosenMonth + 1 < 10){
+      date += "0" + String.valueOf(chosenMonth + 1);
+    } else {
+      date += String.valueOf(chosenMonth + 1);
+    }
+    date+="/";
+    if(chosenDay < 10){
+      date += "0" + String.valueOf(chosenDay);
+    } else {
+      date += String.valueOf(chosenDay);
+    }
+    return date;
+  }
+
+  private String timeToString(int chosenHour, int chosenMinute) {
+    String time = "";
+    if (chosenHour < 10) {
+      time += "0" + String.valueOf(chosenHour);
+    } else {
+      time += String.valueOf(chosenHour);
+    }
+    time += ":";
+    if (chosenMinute < 10) {
+      time += "0" + String.valueOf(chosenMinute);
+    } else {
+      time += String.valueOf(chosenMinute);
+    }
+    return time;
   }
 
   private void configureSaveButton() {
@@ -95,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
           editor.putString(TITLE_PREFS_KEY, String.valueOf(titleEditText.getText()));
           editor.putString(DESCRIPTION_PREFS_KEY, String.valueOf(descriptionEditText.getText()));
           // Commit the edits!
-          //editor.commit();
           editor.apply();
-          Log.d("SAVED", "SAVED");
           long time = getTimeForNotification();
           scheduleNotification(getNotification(String.valueOf(titleEditText.getText()), String.valueOf(descriptionEditText.getText())), time);
           Toast.makeText(MainActivity.this, ALARM_IS_SET,
@@ -107,10 +138,10 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  private void configureTimeEditText() {
-    timeEditText = (EditText) findViewById(R.id.time_edittext);
-    timeEditText.setKeyListener(null);
-    timeEditText.setOnClickListener(new View.OnClickListener() {
+  private void configureTimeTextView() {
+    timeTextView = (TextView) findViewById(R.id.time_textview);
+    timeTextView.setKeyListener(null);
+    timeTextView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         TimePickerFragment newFragment = new TimePickerFragment();
@@ -119,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
           public void onTimeChosen(int hourOfDay, int minute) {
             chosenHour = hourOfDay;
             chosenMinute = minute;
-            timeEditText.setText(hourOfDay + ":" + minute);
+            timeTextView.setText(timeToString(chosenHour, chosenMinute));
           }
         });
         newFragment.show(getFragmentManager(), TIMEPICKER_TAG);
@@ -128,9 +159,9 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void configureDateEditText() {
-    dateEditText = (EditText) findViewById(R.id.date_edittext);
-    dateEditText.setKeyListener(null);
-    dateEditText.setOnClickListener(new View.OnClickListener() {
+    dateTextView = (TextView) findViewById(R.id.date_textview);
+    dateTextView.setKeyListener(null);
+    dateTextView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         DatePickerFragment newFragment = new DatePickerFragment();
@@ -140,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
             chosenYear = year;
             chosenMonth = month;
             chosenDay = day;
-            dateEditText.setText(year + "/" + (month + 1) + "/" + day);
+            dateTextView.setText(dateToString(chosenYear, chosenMonth, chosenDay));
           }
         });
         newFragment.show(getFragmentManager(), DATEPICKER_TAG);
@@ -165,12 +196,12 @@ public class MainActivity extends AppCompatActivity {
 
   private void scheduleNotification(Notification notification, long time) {
 
-    Intent notificationIntent = new Intent(this, NotificationPublisher.class);
-    notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
-    notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+    Intent notificationIntent = new Intent(this, NotificationBroadcastReceiver.class);
+    notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION_ID, 1);
+    notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification);
     PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-    AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
     alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
 
   }
